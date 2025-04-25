@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>
+   Downloads | FragmentSAR
+  </title>
+<script src="https://cdn.tailwindcss.com">
+</script>
+<meta content="index, follow" name="robots"/></head>
+<body>
+<nav class="text-white fixed top-0 w-full z-50 shadow bg-[#001845]">
+<div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+<a class="text-lg font-bold" href="/index.html">
+     FragmentSAR
+    </a>
+<button class="md:hidden" onclick="document.getElementById('menu').classList.toggle('hidden')">
+     ☰
+    </button>
+<ul class="hidden md:flex space-x-6" id="menu">
+<li>
+<a class="hover:underline" href="/search.html">
+       Search
+      </a>
+</li>
+<li>
+<a class="hover:underline" href="/all_molecules.html">
+       Molecules
+      </a>
+</li>
+<li>
+<a class="hover:underline" href="/all_fragments.html">
+       Fragments
+      </a>
+</li>
+<li>
+<a class="hover:underline" href="/all_targets.html">
+       Targets
+      </a>
+</li>
+<li>
+<a class="hover:underline" href="/about.html">
+       About
+      </a>
+</li>
+<li>
+<a class="hover:underline" href="/downloads.html">
+       Downloads
+      </a>
+</li>
+</ul>
+</div>
+</nav>
+<main class="pt-36 max-w-4xl mx-auto px-6 py-20 text-gray-800">
+<h1 class="text-3xl font-semibold text-[#001845] mb-6">
+    Downloads
+   </h1>
+<p class="mb-4">
+    You can download all structured data for molecules, fragments, and targets below in CSV or SDF format. All data was originally sourced from the
+    <a class="text-blue-600 underline" href="https://www.ebi.ac.uk/chembl/" target="_blank">
+     ChEMBL database
+    </a>
+    and processed using cheminformatics workflows with RDKit.
+   </p>
+<p class="mb-6">
+    In the future, we intend to extend FragmentSAR with synthetic route suggestions and enriched SAR annotation tools.
+   </p>
+<table class="w-full text-left border-t border-b border-gray-300 mb-8 text-sm">
+<thead>
+<tr class="text-[#001845] font-semibold">
+<th class="py-3">
+       Dataset
+      </th>
+<th class="py-3">
+       Description
+      </th>
+<th class="py-3">
+       Download
+      </th>
+</tr>
+</thead>
+<tbody class="divide-y divide-gray-200">
+<tr>
+<td class="py-3 font-medium">
+       Molecules
+      </td>
+<td class="py-3">
+       All molecules with ChEMBL IDs, SMILES, and target/fragments mapping.
+      </td>
+<td class="py-3 space-x-2">
+<a class="inline-block bg-[#4f6d7a] hover:bg-[#3e5661] text-white px-3 py-1 rounded" href="exports/all_molecules.csv">
+        CSV
+       </a>
+<a class="inline-block bg-[#4f6d7a] hover:bg-[#3e5661] text-white px-3 py-1 rounded" href="exports/all_molecules.sdf">
+        SDF
+       </a>
+</td>
+</tr>
+<tr>
+<td class="py-3 font-medium">
+       Fragments
+      </td>
+<td class="py-3">
+       Fragment SMILES, frequency counts, and linked molecules.
+      </td>
+<td class="py-3">
+<a class="inline-block bg-[#4f6d7a] hover:bg-[#3e5661] text-white px-3 py-1 rounded" href="exports/all_fragments.csv">
+        CSV
+       </a>
+</td>
+</tr>
+<tr>
+<td class="py-3 font-medium">
+       Targets
+      </td>
+<td class="py-3">
+       Protein targets, ChEMBL IDs, organism and associated bioactivity data.
+      </td>
+<td class="py-3">
+<a class="inline-block bg-[#4f6d7a] hover:bg-[#3e5661] text-white px-3 py-1 rounded" href="exports/all_targets.csv">
+        CSV
+       </a>
+</td>
+</tr>
+</tbody>
+</table>
+</main>
+</body>
+</html>

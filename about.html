@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>About | FragmentSAR</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<meta content="About | FragmentSAR" property="og:title"/><meta content="Explore the FragmentSAR database of molecules, fragments, and targets (structure-activity relationships)." property="og:description"/><meta content="website" property="og:type"/><meta content="https://frizelle-cheminfo.github.io/fragmentSAR2/about.html" property="og:url"/><meta content="summary" name="twitter:card"/><meta content="index, follow" name="robots"/></head>
+<body class="bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100"><nav class="text-white fixed top-0 w-full z-50 shadow bg-[#001845]">
+<div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+<a class="text-lg font-bold" href="/index.html">FragmentSAR</a>
+<button class="md:hidden" onclick="document.getElementById('menu').classList.toggle('hidden')">
+      ☰
+    </button>
+<ul class="hidden md:flex space-x-6" id="menu">
+<li><a class="hover:underline" href="/search.html">Search</a> </li>
+<li><a class="hover:underline" href="/all_molecules.html">Molecules</a></li>
+<li><a class="hover:underline" href="/all_fragments.html">Fragments</a></li>
+<li><a class="hover:underline" href="/all_targets.html">Targets</a></li>
+<li><a class="hover:underline" href="/about.html">About</a></li>
+<li><a class="hover:underline" href="/downloads.html">Downloads</a></li></ul>
+</div>
+</nav>
+<div class="max-w-3xl mx-auto px-4 py-8 text-gray-800 leading-relaxed pt-20">
+<h1 class="text-3xl font-semibold text-[#001845] mb-6">About FragmentSAR</h1>
+<p><strong>FragmentSAR</strong> is a cheminformatics-focused web platform that integrates chemical fragments, molecules, and protein targets into a searchable and visualizable structure–activity relationship (SAR) database.</p>
+<p>This resource supports medicinal chemistry and drug discovery workflows by providing direct links between small molecular fragments and their parent compounds, along with the biological targets they interact with. Fragments are generated using the <strong>Murcko</strong> framework approach and the <strong>BRICS</strong> fragmentation algorithm via the open-source <a class="underline text-blue-600" href="https://www.rdkit.org" target="_blank">RDKit</a> toolkit.</p>
+<h2 class="text-2xl font-semibold mt-8 mb-2">Fragmentation Methods</h2>
+<ul class="list-disc ml-6 mb-4">
+<li><strong>Murcko Scaffolds</strong> — Identifies the core ring systems and linker frameworks of molecules.</li>
+<li><strong>BRICS</strong> (Breaking of Retrosynthetically Interesting Chemical Substructures) — A rule-based algorithm that decomposes molecules into chemically meaningful building blocks.</li>
+</ul>
+<h2 class="text-2xl font-semibold mt-6 mb-2">Bioactivity Data and pK<sub>i</sub> Interpretation</h2>
+<ul class="list-disc ml-6 mb-4">
+<li>Higher pK<sub>i</sub> values indicate stronger binding (greater potency).</li>
+<li>For example, a pK<sub>i</sub> of 9 corresponds to a K<sub>i</sub> of 1 nanomolar (nM).</li>
+</ul>
+<h2 class="text-2xl font-semibold mt-6 mb-2">Intended Use</h2>
+<ul class="list-disc ml-6 mb-4">
+<li>Fragment-based drug discovery workflows</li>
+<li>Structure-based SAR analysis for medicinal chemistry</li>
+<li>Educational and training applications in cheminformatics</li>
+<li>Rapid querying and visualization of molecular-fragment-target relationships</li>
+</ul>
+<h2 class="text-2xl font-semibold mt-6 mb-2">Technologies Used</h2>
+<p>Structures are rendered using <a class="underline text-blue-600" href="https://www.rdkit.org" target="_blank">RDKit</a>. DataTables and Cytoscape.js enable rich tabular exploration and interactive network graphs. Styling is provided by Tailwind CSS.</p>
+<h2 class="text-2xl font-semibold mt-6 mb-2">Attributions</h2>
+<p>This platform uses publicly available chemical and bioactivity data from the <a class="underline text-blue-600" href="https://www.ebi.ac.uk/chembl/" target="_blank">ChEMBL Database</a> and is powered by the <a class="underline text-blue-600" href="https://www.rdkit.org" target="_blank">RDKit</a> open-source cheminformatics toolkit.</p>
+</div>
+</body>
+</html>
