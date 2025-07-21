@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Fragment SAR – Sketch &amp; Enumerate</title>
+
+  <!-- Ketcher UI -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ketcher-standalone@3.4.0/dist/ketcher.min.css" />
+  <script type="module" src="https://cdn.jsdelivr.net/npm/ketcher-standalone@3.4.0/dist/ketcher.esm.js"></script>
+
+  <!-- RDKit WASM bundle -->
+  <script src="https://unpkg.com/@rdkit/rdkit@2025.3.4-1.0.0/Code/MinimalLib/dist/RDKit_minimal.js"></script>
+
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:0;padding:1rem;max-width:1100px}
+    h2{margin-top:0}
+    #editor{border:1px solid #ccc;height:420px;margin-bottom:1rem}
+    textarea,input,select{font-family:monospace;font-size:.9rem}
+    textarea{width:100%;min-height:3rem;margin-top:.5rem}
+    input[type="text"]{width:60%}
+    select{width:38%;height:10rem;margin-left:.5rem}
+    button{margin:.4rem .2rem;padding:.4rem .8rem;border:none;border-radius:4px;background:#0077d9;color:#fff;font-weight:600;cursor:pointer}
+    button:hover{background:#005fb3}
+    table{width:100%;border-collapse:collapse;margin-top:1rem}
+    th,td{border:1px solid #ddd;padding:.4rem;text-align:center;font-size:.85rem}
+    th{background:#f3f3f3}
+    tr.live td{background:#ffffe6}
+  </style>
+</head>
+<body>
+<h2>Fragment SAR – live sketch &amp; enumeration</h2>
+
+<!-- =====  DRAWING CANVAS  ===== -->
+<div id="editor"></div>
+
+<label for="smilesBox"><strong>Current SMILES</strong></label>
+<textarea id="smilesBox" placeholder="Paste SMILES here…"></textarea>
+<button id="addBtn" title="Freeze current molecule into the results table">Add to table</button>
+
+<hr>
+
+<!-- =====  ENUMERATION PANEL  ===== -->
+<h3 style="margin-bottom:.2rem">Enumerate analogues</h3>
+<input id="querySmiles" type="text" placeholder="SMILES to enumerate…" />
+<button id="fromCanvasBtn">From canvas</button>
+<button id="enumBtn">Enumerate</button>
+<br>
+<select id="groupSelect" multiple size="12" title="Hold Ctrl / Cmd to multi‑select – empty = use all groups">
+  <optgroup label="Polarity / H‑bond">
+    <option value="OH">OH</option>
+    <option value="OMe">OMe</option>
+    <option value="OEt">OEt</option>
+    <option value="CF2H">CF2H</option>
+    <option value="NH2">NH2</option>
+    <option value="NMe2">NMe2</option>
+    <option value="CONH2">CONH2</option>
+    <option value="SO2NH2">SO2NH2</option>
+  </optgroup>
+  <optgroup label="Lipo‑boosters">
+    <option value="Me">Me</option>
+    <option value="Et">Et</option>
+    <option value="iPr">iPr</option>
+    <option value="tBu">tBu</option>
+    <option value="CF3">CF3</option>
+    <option value="OCF3">OCF3</option>
+    <option value="cyclopropyl">cyclopropyl</option>
+    <option value="phenyl">phenyl</option>
+  </optgroup>
+  <optgroup label="Electrophile / warhead">
+    <option value="Acryl">Acryl</option>
+    <option value="ClAc">ClAc</option>
+    <option value="SulfonylF">SulfonylF</option>
+    <option value="Boro">Boro</option>
+    <option value="Isothio">Isothio</option>
+    <option value="Ald">Ald</option>
+  </optgroup>
+  <optgroup label="Click / handles">
+    <option value="Azide">Azide</option>
+    <option value="Alkyne">Alkyne</option>
+    <option value="Diazirine">Diazirine</option>
+    <option value="Norborn">Norborn</option>
+  </optgroup>
+  <optgroup label="Heteroaryl">
+    <option value="2‑Pyr">2‑Pyr</option>
+    <option value="4‑Pyr">4‑Pyr</option>
+    <option value="Imid">Imid</option>
+    <option value="Thiaz">Thiaz</option>
+  </optgroup>
+</select>
+<p style="font-size:.8rem;margin:0 .2rem">(Nothing selected → enumerate with all 30 groups)</p>
+
+<!-- =====  RESULTS TABLE  ===== -->
+<table id="results">
+  <thead>
+    <tr><th>SMILES</th><th>MW</th><th>cLogP</th><th>H‑BD</th><th>H‑BA</th><th>Ro5</th><th>QED</th></tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<!-- =====  CORE LOGIC  ===== -->
+<script type="module">
+import { Ketcher } from 'https://cdn.jsdelivr.net/npm/ketcher-standalone@3.4.0/dist/ketcher.esm.js';
+
+const editor = new Ketcher('#editor', {
+  staticResourcesUrl: 'https://cdn.jsdelivr.net/npm/ketcher-standalone@3.4.0/dist'
+});
+
+// wait for RDKit wasm
+await window.RDKit.load();
+const rdkit = window.RDKit;
+
+/* util: calculate descriptors */
+function calc(smiles){
+  const mol = rdkit.get_mol(smiles);
+  const d = {
+    smiles,
+    mw: mol.get_molecular_weight(),
+    logp: mol.calc_clogp(),
+    hbd: mol.get_num_h_donors(),
+    hba: mol.get_num_h_acceptors(),
+    qed: rdkit.qed(mol)
+  };
+  d.ro5 = (d.mw>500)+(d.logp>5)+(d.hbd>5)+(d.hba>10);
+  mol.delete();
+  return d;
+}
+
+/* paint a row */
+function addRow(d, {live=false}={}){
+  const tbody = document.querySelector('#results tbody');
+  let tr;
+  if(live){
+    tr = document.querySelector('tr.live');
+    if(!tr){
+      tr = tbody.insertRow(0);
+      tr.classList.add('live');
+    }
+    tr.innerHTML = '';
+  } else {
+    tr = tbody.insertRow();
+  }
+  tr.innerHTML = `<td>${d.smiles}</td><td>${d.mw.toFixed(1)}</td><td>${d.logp.toFixed(1)}</td>`+
+                 `<td>${d.hbd}</td><td>${d.hba}</td><td>${d.ro5}</td><td>${d.qed.toFixed(2)}</td>`;
+}
+
+/* live update from canvas */
+editor.subscribe('change', async () => {
+  const smiles = await editor.getSmiles();
+  document.getElementById('smilesBox').value = smiles;
+  if(smiles) addRow(calc(smiles), {live:true});
+});
+
+/* freeze button */
+document.getElementById('addBtn').onclick = () => {
+  const smiles = document.getElementById('smilesBox').value.trim();
+  if(smiles) addRow(calc(smiles));
+};
+
+/* helper get selected groups */
+function selectedGroups(){
+  return Array.from(document.getElementById('groupSelect').selectedOptions).map(o=>o.value);
+}
+
+/* enumeration */
+async function enumerate(smiles){
+  if(!smiles) return;
+  const payload = {smiles};
+  const groups = selectedGroups();
+  if(groups.length) payload.groups = groups;
+  try{
+    const r = await fetch('https://fragment-sar-enum.onrender.com/enumerate',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    if(!r.ok) throw new Error(await r.text());
+    const data = await r.json();
+    data.rows.forEach(d=>addRow(d));
+  }catch(err){
+    alert('Enumeration failed: '+err.message);
+  }
+}
+
+document.getElementById('enumBtn').onclick = () =>
+  enumerate(document.getElementById('querySmiles').value.trim());
+
+document.getElementById('fromCanvasBtn').onclick = async () => {
+  const smiles = await editor.getSmiles();
+  document.getElementById('querySmiles').value = smiles;
+  enumerate(smiles);
+};
+</script>
+</body>
+</html>
